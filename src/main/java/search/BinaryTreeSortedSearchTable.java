@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.LinkedList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Purpose of BinaryTreeSortedSearchTable is
@@ -49,7 +50,19 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
 
     @Override
     public Key floor(Key key) {
-        return null;
+        Node candidate = null;
+        for (Node current = start; current != null; ) {
+            int lookedForIs = key.compareTo(current.key);
+            if (lookedForIs < 0) {
+                current = current.left;
+            } else if (lookedForIs > 0) {
+                candidate = current;
+                current = current.right;
+            } else {
+                return current.key;
+            }
+        }
+        return candidate != null ? candidate.key : null;
     }
 
     @Override
@@ -59,7 +72,7 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
 
     @Override
     public int rank(Key key) {
-        int parentSize = (start.left != null ? start.left.size() : 0) ;
+        int parentSize = (start.left != null ? start.left.size() : 0);
         for (Node current = start; current != null; ) {
             int cmp = key.compareTo(current.key);
             if (cmp < 0) {
@@ -118,6 +131,38 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
         }
 
         System.out.println(bt.size());
+    }
+
+    @Test
+    public void floorTest() {
+        BinaryTreeSortedSearchTable<Integer, Integer> bt = new BinaryTreeSortedSearchTable<>();
+
+        bt.put(8, 8);
+        bt.put(4, 4);
+        bt.put(6, 6);
+        bt.put(2, 2);
+        bt.put(1, 1);
+        bt.put(3, 3);
+
+        bt.put(12, 12);
+        bt.put(10, 10);
+        bt.put(9, 9);
+        //bt.put(11, 11);
+        bt.put(14, 14);
+
+        assertEquals(Integer.valueOf(8), bt.floor(8));
+        assertEquals(Integer.valueOf(4), bt.floor(4));
+        assertEquals(Integer.valueOf(6), bt.floor(7));
+        assertEquals(Integer.valueOf(4), bt.floor(5));
+        assertEquals(Integer.valueOf(1), bt.floor(1));
+        assertEquals(Integer.valueOf(2), bt.floor(2));
+        assertEquals(Integer.valueOf(3), bt.floor(3));
+
+        assertEquals(Integer.valueOf(12), bt.floor(12));
+        assertEquals(Integer.valueOf(14), bt.floor(15));
+        assertEquals(Integer.valueOf(10), bt.floor(10));
+        assertEquals(Integer.valueOf(10), bt.floor(11));
+        assertNull( bt.floor(0));
     }
 
     Value get(Node node, Key key) {
