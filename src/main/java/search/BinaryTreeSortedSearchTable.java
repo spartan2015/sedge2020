@@ -162,7 +162,66 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
         assertEquals(Integer.valueOf(14), bt.floor(15));
         assertEquals(Integer.valueOf(10), bt.floor(10));
         assertEquals(Integer.valueOf(10), bt.floor(11));
-        assertNull( bt.floor(0));
+        assertNull(bt.floor(0));
+    }
+
+    @Override
+    public void delete(Key key) {
+        // first find the the key
+        boolean isLeft = false;
+        for (Node current = start, parent = null; current != null) {
+            int cmp = key.compareTo(current.key);
+            if (cmp == 0) {
+                Node delNode = current;
+
+                Node predecessor = delNode.left;
+                Node predecessorParent = null;
+                while (predecessor.right != null) {
+                    predecessorParent = predecessor;
+                    predecessor = predecessor.right;
+                }
+                if (predecessor != null) {
+                    if (isLeft) {
+                        if (parent == null) {
+                            start = delNode.right;
+                        } else {
+                            parent.left = predecessor;
+                        }
+                        predecessorParent.right = predecessor.left;
+                        predecessor.right = delNode.right;
+                        predecessor.left = predecessorParent;
+                    } else {
+                        if (parent == null) {
+                            start = delNode.right;
+                        } else {
+                            parent.right = predecessor;
+                        }
+                        predecessorParent.left = predecessor.right;
+                        predecessor.left = delNode.left;
+                        predecessor.right = predecessorParent;
+                    }
+                } else {
+                    if (parent == null) {
+                        start = delNode.right;
+                    } else {
+                        if (isLeft) {
+                            parent.left = current.right;
+                        } else {
+                            parent.right = current.left;
+                        }
+                    }
+                }
+            } else if (cmp < 0) {
+                isLeft = true;
+                current = current.left;
+
+            } else if (cmp > 0) {
+                isLeft = false;
+                current = current.right;
+            }
+
+            parent = current;
+        }
     }
 
     Value get(Node node, Key key) {
