@@ -165,11 +165,38 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
         assertNull(bt.floor(0));
     }
 
+
+    @Test
+    public void deleteTest() {
+        BinaryTreeSortedSearchTable<Integer, Integer> bt = new BinaryTreeSortedSearchTable<>();
+
+        bt.put(8, 8);
+        bt.put(4, 4);
+        bt.put(6, 6);
+        bt.put(5, 5);
+        bt.put(2, 2);
+        bt.put(1, 1);
+        bt.put(3, 3);
+
+        bt.put(12, 12);
+        bt.put(10, 10);
+        bt.put(11, 11);
+        bt.put(9, 9);
+        //bt.put(11, 11);
+        bt.put(14, 14);
+
+        bt.delete(8);
+
+        bt.delete(12);
+
+        System.out.println("done");
+    }
+
     @Override
     public void delete(Key key) {
         // first find the the key
         boolean isLeft = false;
-        for (Node current = start, parent = null; current != null) {
+        for (Node current = start, parent = null; current != null;) {
             int cmp = key.compareTo(current.key);
             if (cmp == 0) {
                 Node delNode = current;
@@ -187,18 +214,19 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
                         } else {
                             parent.left = predecessor;
                         }
-                        predecessorParent.right = predecessor.left;
+                        predecessorParent.left = predecessor.right;
                         predecessor.right = delNode.right;
-                        predecessor.left = predecessorParent;
+                        predecessor.left = delNode.left;
                     } else {
                         if (parent == null) {
-                            start = delNode.right;
+                            start = predecessor;
                         } else {
                             parent.right = predecessor;
                         }
-                        predecessorParent.left = predecessor.right;
+                        predecessorParent.right = predecessor.left;
                         predecessor.left = delNode.left;
-                        predecessor.right = predecessorParent;
+                        predecessor.right = delNode.right;
+
                     }
                 } else {
                     if (parent == null) {
@@ -211,16 +239,17 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
                         }
                     }
                 }
+                break;
             } else if (cmp < 0) {
                 isLeft = true;
+                parent = current;
                 current = current.left;
 
             } else if (cmp > 0) {
                 isLeft = false;
+                parent = current;
                 current = current.right;
             }
-
-            parent = current;
         }
     }
 
@@ -324,6 +353,10 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
             if (node != null) {
                 list.add(node);
             }
+        }
+
+        public String toString(){
+            return this.key.toString();
         }
     }
 }
