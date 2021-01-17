@@ -3,6 +3,7 @@ package search;
 import org.junit.Test;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -72,7 +73,7 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
 
     @Override
     public int rank(Key key) {
-        int parentSize = (start.left != null ? start.left.size() : 0);
+        int parentSize = start.left != null ? start.left.size() : 0;
         for (Node current = start; current != null; ) {
             int cmp = key.compareTo(current.key);
             if (cmp < 0) {
@@ -111,7 +112,7 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
         }
 
         for (int i = 0; i < MAX; i++) {
-            assertEquals((Integer) i + 1, bt.rank(i));
+            assertEquals(i + 1, bt.rank(i));
         }
 
 
@@ -196,7 +197,7 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
     public void delete(Key key) {
         // first find the the key
         boolean isLeft = false;
-        for (Node current = start, parent = null; current != null;) {
+        for (Node current = start, parent = null; current != null; ) {
             int cmp = key.compareTo(current.key);
             if (cmp == 0) {
                 Node delNode = current;
@@ -251,6 +252,64 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
                 current = current.right;
             }
         }
+    }
+
+    public DQNode inOrder() {
+        DQNode list = new DQNode();
+        list.value = start;
+
+        Queue<DQNode> queue = new LinkedList<>();
+        queue.add(list);
+
+        while (!queue.isEmpty()) {
+            DQNode dqnode = queue.remove();
+            if (dqnode.value.left != null) {
+                DQNode n = new DQNode();
+                n.value = dqnode.value.left;
+
+                n.parent = dqnode.parent;
+                if (dqnode.parent != null)
+                    dqnode.parent.next = n;
+
+                dqnode.parent = n;
+                n.next = dqnode;
+
+                if (n.parent == null) {
+                    list = n;
+                }
+
+                queue.add(n);
+            }
+
+            if (dqnode.value.right != null) {
+                DQNode n = new DQNode();
+                n.value = dqnode.value.right;
+
+                DQNode tmp = dqnode.next;
+
+                dqnode.next = n;
+                n.parent = dqnode;
+                n.next = tmp;
+
+                queue.add(n);
+            }
+
+        }
+
+        return list;
+    }
+
+    @Test
+    public void testInOrder() {
+        BinaryTreeSortedSearchTable<Integer, Integer> bts = new BinaryTreeSortedSearchTable<>();
+        bts.put(8, 8);
+        bts.put(4, 4);
+        bts.put(6, 6);
+        bts.put(12, 12);
+        bts.put(10, 10);
+        bts.put(14, 14);
+
+        DQNode dqNode = (DQNode) bts.inOrder();
     }
 
     Value get(Node node, Key key) {
@@ -324,6 +383,12 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
 
     }
 
+    class DQNode {
+        Node value;
+        DQNode parent;
+        DQNode next;
+    }
+
     public class Node {
         Key key;
         Value value;
@@ -334,6 +399,10 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
         public Node(Key key, Value value) {
             this.key = key;
             this.value = value;
+        }
+
+        public String toString() {
+            return key.toString();
         }
 
         int size() {
@@ -354,9 +423,6 @@ public class BinaryTreeSortedSearchTable<Key extends Comparable<Key>, Value> imp
                 list.add(node);
             }
         }
-
-        public String toString(){
-            return this.key.toString();
-        }
     }
+
 }
