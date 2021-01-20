@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 /**
  * PlayHeapsort
- * 2 N lg N
+ *
  */
 public class PlayHeapsort {
 
