@@ -28,6 +28,10 @@ public class RedBlackBST<Key extends Comparable, Value> {
         if (!isEmpty()) root.color = BLACK;
     }
 
+    private boolean isEmpty() {
+        return root == null;
+    }
+
     public void insert(Key key, Value value) {
         root = insert(root, key, value);
         root.color = BLACK;
